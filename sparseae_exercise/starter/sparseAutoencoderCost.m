@@ -40,14 +40,39 @@ b2grad = zeros(size(b2));
 % 
 % Stated differently, if we were using batch gradient descent to optimize the parameters,
 % the gradient descent update to W1 would be W1 := W1 - alpha * W1grad, and similarly for W2, b1, b2. 
-% 
+%
 
+% initialization
+Z2=zeros(hiddenSize, size(data,2));
+A2=zeros(hiddenSize, size(data,2));
+Z3=zeros(visibleSize, size(data,2));
+Y=zeros(visibleSize, size(data,2));
+rho_model=zeros(hiddenSize,1);
 
+% Forward pass and compute rho_model and cost
+% for i=1:size(data,2)
+%     x=data(:,i);
+%     Z2(:,i)=W1*x+b1;
+%     A2(:,i)=sigm(z2);
+%     Z3(:,i)=W2*a2+b2;
+%     Y(:,i)=sigm(z3);
+% end
+Z2=W1*data+repmat(b1, [1,size(data,2)]);
+A2=sigmoid(Z2);
+Z3=W2*A2+repmat(b2, [1,size(data,2)]);
+Y=sigmoid(Z3);
 
+rho_model=sum(A2,2)./size(data,2);
+cost_sparse=sum(sparsityParam.*log(sparsityParam./rho_model) + (1-sparsityParam).*log((1-sparsityParam)./(1-rho_model)));
+cost= 1/(size(data,2)*2)*sum(sum((Y-data).^2)) + lambda/2*(sum(sum(W1.^2))+sum(sum(W2.^2))) + beta*cost_sparse;
 
-
-
-
+% Backward pass
+delta3=-(data-Y).*(1-Y).*Y;
+delta2=(W2'*delta3 + repmat(beta*(-sparsityParam./rho_model+(1-sparsityParam)./(1-rho_model)), [1,size(data,2)])).*(1-A2).*A2;
+W1grad=delta2*data'./size(data,2) + lambda.*W1;
+b1grad=sum(delta2,2)./size(data,2);
+W2grad=delta3*A2'./size(data,2) + lambda.*W2;
+b2grad=sum(delta3,2)./size(data,2);
 
 
 
