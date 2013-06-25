@@ -1,3 +1,6 @@
 *.zip
 *.jpg
 *.asv
+*.idx1-ubyte
+*.idx3-ubyte
+*.gz
