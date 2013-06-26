@@ -14,8 +14,8 @@ pred = zeros(1, size(data, 2));
 %% ---------- YOUR CODE HERE --------------------------------------
 %  Instructions: Compute pred using theta assuming that the labels start 
 %                from 1.
-
-
+[col_max col_argmax] = max(theta * data, [], 1);
+pred=col_argmax;
 
 
 
