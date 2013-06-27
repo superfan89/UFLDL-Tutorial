@@ -60,20 +60,25 @@ groundTruth = full(sparse(labels, 1:M, 1));
 %                Note that the size of the matrices in stackgrad should
 %                match exactly that of the size of the matrices in stack.
 %
+numCases=size(data,2);
+Z2=stack{1}.w * data + repmat(stack{1}.b, [1 size(data,2)]);
+A2=sigmoid(Z2);
+Z3=stack{2}.w * A2 + repmat(stack{2}.b, [1 size(data,2)]);
+A3=sigmoid(Z3);
 
+M_softmax=softmaxTheta * A3;
+M_softmax = bsxfun(@minus, M_softmax, max(M_softmax, [], 1));
+M_softmax = exp(M_softmax);
+prediction= M_softmax./repmat(sum(M_softmax), [size(M_softmax,1) 1]);
+cost=-1/numCases * sum(sum(log(prediction).*groundTruth)) + lambda/2*sum(sum(softmaxTheta.^2));
 
-
-
-
-
-
-
-
-
-
-
-
-
+delta_3=-1/numCases * softmaxTheta' * (groundTruth - prediction) .* (1-A3) .* A3;
+delta_2= (stack{2}.w)'*delta_3 .* (1-A2) .* A2;
+stackgrad{2}.w=delta_3 * A2';
+stackgrad{2}.b=sum(delta_3, 2);
+stackgrad{1}.w=delta_2 * data';
+stackgrad{1}.b=sum(delta_2, 2);
+softmaxThetaGrad=-1/numCases * (groundTruth - prediction) * A3' + lambda * softmaxTheta;
 
 % -------------------------------------------------------------------------
 
