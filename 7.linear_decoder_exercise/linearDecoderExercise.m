@@ -112,7 +112,7 @@ displayColorNetwork(patches(:, 1:100));
 theta = initializeParameters(hiddenSize, visibleSize);
 
 % Use minFunc to minimize the function
-addpath minFunc/
+addpath ../minFunc/
 
 options = struct;
 options.Method = 'lbfgs'; 
@@ -136,3 +136,4 @@ fprintf('Saved\n');
 W = reshape(optTheta(1:visibleSize * hiddenSize), hiddenSize, visibleSize);
 b = optTheta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
 displayColorNetwork( (W*ZCAWhite)');
+print -djpeg weights.jpg   % save the visualization to a file 
