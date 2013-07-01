@@ -4,3 +4,4 @@
 *.idx1-ubyte
 *.idx3-ubyte
 *.gz
+/8.cnn_exercise/*.mat

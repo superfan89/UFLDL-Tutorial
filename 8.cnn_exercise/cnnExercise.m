@@ -41,7 +41,7 @@ poolDim = 19;          % dimension of pooling region
 optTheta =  zeros(2*hiddenSize*visibleSize+hiddenSize+visibleSize, 1);
 ZCAWhite =  zeros(visibleSize, visibleSize);
 meanPatch = zeros(visibleSize, 1);
-
+load ../7.linear_decoder_exercise/STL10Features.mat
 
 % --------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ end
 %  convolution and pooling 50 features at a time to avoid running out of
 %  memory. Reduce this number if necessary
 
-stepSize = 50;
+stepSize = 20;
 assert(mod(hiddenSize, stepSize) == 0, 'stepSize should divide hiddenSize');
 
 load stlTrainSubset.mat % loads numTrainImages, trainImages, trainLabels
@@ -191,7 +191,7 @@ end
 % You might want to save the pooled features since convolution and pooling takes a long time
 save('cnnPooledFeatures.mat', 'pooledFeaturesTrain', 'pooledFeaturesTest');
 toc();
-
+addpath ../minFunc
 %%======================================================================
 %% STEP 4: Use pooled features for classification
 %  Now, you will use your pooled features to train a softmax classifier,
