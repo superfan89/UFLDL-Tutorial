@@ -37,5 +37,8 @@ function [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, vis
     %   the grouping matrix groupMatrix first, and extend the 
     %   non-topographic version to the topographic version later.
     % -------------------- YOUR CODE HERE --------------------
-    
+    cost=1/numExamples * sum(sum((weightMatrix * featureMatrix-patches).^2)) + lambda * sum(sum(sqrt(groupMatrix * featureMatrix.^2 + epsilon))) + gamma * sum(sum(weightMatrix.^2));
+    grad=2/numExamples * weightMatrix' * (weightMatrix * featureMatrix-patches) + lambda * groupMatrix' * (1./sqrt(groupMatrix * featureMatrix.^2 + epsilon)) .*featureMatrix;  
+%     grad=2*featureMatrix;
+    grad=grad(:);
 end

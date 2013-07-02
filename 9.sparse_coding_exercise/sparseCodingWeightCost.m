@@ -34,5 +34,7 @@ function [cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visi
     %   Write code to compute the cost and gradient with respect to the
     %   weights given in weightMatrix.     
     % -------------------- YOUR CODE HERE --------------------    
-
+    cost=1/numExamples * sum(sum((weightMatrix * featureMatrix-patches).^2)) + lambda * sum(sum(sqrt(groupMatrix * featureMatrix.^2 + epsilon))) + gamma * sum(sum(weightMatrix.^2));
+    grad=2/numExamples * (weightMatrix * featureMatrix-patches) * featureMatrix' + 2 * gamma * weightMatrix;
+    grad=grad(:);
 end

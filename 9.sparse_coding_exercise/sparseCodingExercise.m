@@ -10,14 +10,14 @@
 
 % Add the paths to your earlier exercises if necessary
 % addpath /path/to/solution
-
+addpath ../minFunc
 %%======================================================================
 %% STEP 0: Initialization
 %  Here we initialize some parameters used for the exercise.
 
 numPatches = 20000;   % number of patches
 numFeatures = 121;    % number of features to learn
-patchDim = 8;         % patch dimension
+patchDim = 16;         % patch dimension
 visibleSize = patchDim * patchDim; 
 
 % dimension of the grouping region (poolDim x poolDim) for topographic sparse coding
@@ -33,84 +33,84 @@ gamma = 1e-2;   % L2-regularisation parameter (on basis)
 %%======================================================================
 %% STEP 1: Sample patches
 
-images = load('IMAGES.mat');
+images = load('../1.sparseae_exercise/starter/IMAGES.mat');
 images = images.IMAGES;
 
 patches = sampleIMAGES(images, patchDim, numPatches);
 display_network(patches(:, 1:64));
 
-%%======================================================================
-%% STEP 2: Implement and check sparse coding cost functions
-%  Implement the two sparse coding cost functions and check your gradients.
-%  The two cost functions are
-%  1) sparseCodingFeatureCost (in sparseCodingFeatureCost.m) for the features 
-%     (used when optimizing for s, which is called featureMatrix in this exercise) 
-%  2) sparseCodingWeightCost (in sparseCodingWeightCost.m) for the weights
-%     (used when optimizing for A, which is called weightMatrix in this exericse)
-
-% We reduce the number of features and number of patches for debugging
-numFeatures = 5;
-patches = patches(:, 1:5);
-numPatches = 5;
-
-weightMatrix = randn(visibleSize, numFeatures) * 0.005;
-featureMatrix = randn(numFeatures, numPatches) * 0.005;
-
-%% STEP 2a: Implement and test weight cost
-%  Implement sparseCodingWeightCost in sparseCodingWeightCost.m and check
-%  the gradient
-
-[cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon);
-
-numgrad = computeNumericalGradient( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon), weightMatrix(:) );
-% Uncomment the blow line to display the numerical and analytic gradients side by side
-% disp([numgrad grad]);     
-diff = norm(numgrad-grad)/norm(numgrad+grad);
-fprintf('Weight difference: %g\n', diff);
-assert(diff < 1e-8, 'Weight difference too large. Check your weight cost function. ');
-
-%% STEP 2b: Implement and test feature cost (non-topographic)
-%  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
-%  the gradient. You may wish to implement the non-topographic version of
-%  the cost function first, and extend it to the topographic version later.
-
-% Set epsilon to a larger value so checking the gradient numerically makes sense
-epsilon = 1e-2;
-
-% We pass in the identity matrix as the grouping matrix, putting each
-% feature in a group on its own.
-groupMatrix = eye(numFeatures);
-
-[cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix);
-
-numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
-% Uncomment the blow line to display the numerical and analytic gradients side by side
-% disp([numgrad grad]); 
-diff = norm(numgrad-grad)/norm(numgrad+grad);
-fprintf('Feature difference (non-topographic): %g\n', diff);
-assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
-
-%% STEP 2c: Implement and test feature cost (topographic)
-%  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
-%  the gradient. This time, we will pass a random grouping matrix in to
-%  check if your costs and gradients are correct for the topographic
-%  version.
-
-% Set epsilon to a larger value so checking the gradient numerically makes sense
-epsilon = 1e-2;
-
-% This time we pass in a random grouping matrix to check if the grouping is
-% correct.
-groupMatrix = rand(100, numFeatures);
-
-[cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix);
-
-numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
-% Uncomment the blow line to display the numerical and analytic gradients side by side
-% disp([numgrad grad]); 
-diff = norm(numgrad-grad)/norm(numgrad+grad);
-fprintf('Feature difference (topographic): %g\n', diff);
-assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
+% %%======================================================================
+% %% STEP 2: Implement and check sparse coding cost functions
+% %  Implement the two sparse coding cost functions and check your gradients.
+% %  The two cost functions are
+% %  1) sparseCodingFeatureCost (in sparseCodingFeatureCost.m) for the features 
+% %     (used when optimizing for s, which is called featureMatrix in this exercise) 
+% %  2) sparseCodingWeightCost (in sparseCodingWeightCost.m) for the weights
+% %     (used when optimizing for A, which is called weightMatrix in this exericse)
+% 
+% % We reduce the number of features and number of patches for debugging
+% numFeatures = 5;
+% patches = patches(:, 1:5);
+% numPatches = 5;
+% 
+% weightMatrix = randn(visibleSize, numFeatures) * 0.005;
+% featureMatrix = randn(numFeatures, numPatches) * 0.005;
+% 
+% %% STEP 2a: Implement and test weight cost
+% %  Implement sparseCodingWeightCost in sparseCodingWeightCost.m and check
+% %  the gradient
+% 
+% [cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon);
+% 
+% numgrad = computeNumericalGradient( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon), weightMatrix(:) );
+% % Uncomment the blow line to display the numerical and analytic gradients side by side
+% % disp([numgrad grad]);     
+% diff = norm(numgrad-grad)/norm(numgrad+grad);
+% fprintf('Weight difference: %g\n', diff);
+% assert(diff < 1e-8, 'Weight difference too large. Check your weight cost function. ');
+% 
+% %% STEP 2b: Implement and test feature cost (non-topographic)
+% %  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
+% %  the gradient. You may wish to implement the non-topographic version of
+% %  the cost function first, and extend it to the topographic version later.
+% 
+% % Set epsilon to a larger value so checking the gradient numerically makes sense
+% epsilon = 1e-2;
+% 
+% % We pass in the identity matrix as the grouping matrix, putting each
+% % feature in a group on its own.
+% groupMatrix = eye(numFeatures);
+% 
+% [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix);
+% 
+% numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
+% % Uncomment the blow line to display the numerical and analytic gradients side by side
+% % disp([numgrad grad]); 
+% diff = norm(numgrad-grad)/norm(numgrad+grad);
+% fprintf('Feature difference (non-topographic): %g\n', diff);
+% assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
+% 
+% %% STEP 2c: Implement and test feature cost (topographic)
+% %  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
+% %  the gradient. This time, we will pass a random grouping matrix in to
+% %  check if your costs and gradients are correct for the topographic
+% %  version.
+% 
+% % Set epsilon to a larger value so checking the gradient numerically makes sense
+% epsilon = 1e-2;
+% 
+% % This time we pass in a random grouping matrix to check if the grouping is
+% % correct.
+% groupMatrix = rand(100, numFeatures);
+% 
+% [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix);
+% 
+% numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
+% % Uncomment the blow line to display the numerical and analytic gradients side by side
+% % disp([numgrad grad]); 
+% diff = norm(numgrad-grad)/norm(numgrad+grad);
+% fprintf('Feature difference (topographic): %g\n', diff);
+%  assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
 
 %%======================================================================
 %% STEP 3: Iterative optimization
@@ -126,7 +126,7 @@ assert(diff < 1e-8, 'Feature difference too large. Check your feature cost funct
 %  iterative optimization.
 
 % Initialize options for minFunc
-options.Method = 'lbfgs';
+options.Method = 'cg';
 options.display = 'off';
 options.verbose = 0;
 
@@ -150,7 +150,6 @@ for row = 1:donutDim
     end
     groupMatrix = circshift(groupMatrix, [0 -1, 0]);
 end
-
 groupMatrix = reshape(groupMatrix, numFeatures, numFeatures);
 if isequal(questdlg('Initialize grouping matrix for topographic or non-topographic sparse coding?', 'Topographic/non-topographic?', 'Non-topographic', 'Topographic', 'Non-topographic'), 'Non-topographic')
     groupMatrix = eye(numFeatures);
@@ -163,7 +162,7 @@ batchPatches = patches(:, indices);
 
 fprintf('%6s%12s%12s%12s%12s\n','Iter', 'fObj','fResidue','fSparsity','fWeight');
 
-for iteration = 1:200                      
+for iteration = 1:10000                      
     error = weightMatrix * featureMatrix - batchPatches;
     error = sum(error(:) .^ 2) / batchNumPatches;
     
@@ -204,10 +203,10 @@ for iteration = 1:200
     %   Once you have verified that your closed form solution is correct,
     %   you should comment out the checking code before running the
     %   optimization.
-    
-    [cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix);
-    assert(norm(grad) < 1e-12, 'Weight gradient should be close to 0. Check your closed form solution for weightMatrix again.')
-    error('Weight gradient is okay. Comment out checking code before running optimization.');
+    weightMatrix=batchPatches*featureMatrix' / (featureMatrix * featureMatrix' + batchNumPatches * gamma * eye(numFeatures));
+%     [cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix);
+%     assert(norm(grad) < 1e-12, 'Weight gradient should be close to 0. Check your closed form solution for weightMatrix again.')
+%     error('Weight gradient is okay. Comment out checking code before running optimization.');
     % -------------------- YOUR CODE HERE --------------------   
     
     % Visualize learned basis
